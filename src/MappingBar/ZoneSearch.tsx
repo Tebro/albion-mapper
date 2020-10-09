@@ -1,5 +1,6 @@
 import clone from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import startsWith from 'lodash/startsWith';
 import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField } from '@material-ui/core';
@@ -20,8 +21,8 @@ const filterZones = (zoneList: ZoneLight[], state: object) => {
   const inputVal: string = (state as any).inputValue.toLowerCase();
 
   for (const z of zoneList) {
-    // TODO compare lodash startsWith performance
-    if (z.value.startsWith(inputVal)) {
+    // lodash is faster than native implementation
+    if (startsWith(z.value, inputVal)) {
       newZoneList.push(z);
     }
   }
