@@ -49,15 +49,17 @@ const MappingBar: FC<MappingBarProps> = ({
 
   const addPortal = useAddPortal(token, updatePortals);
 
-  const filteredFrom = useMemo<ZoneLight[]>(
-    () => zoneNames.filter((z) => z !== to),
-    [to, zoneNames]
-  );
+  const filteredFrom = useMemo<ZoneLight[]>(() => {
+    const zones = zoneNames.filter((z) => z?.value !== to?.value);
+    zones.unshift(DEFAULT_ZONE); // allow user to clear input
+    return zones;
+  }, [to, zoneNames]);
 
-  const filteredTo = useMemo<ZoneLight[]>(
-    () => zoneNames.filter((z) => z.value !== from?.value),
-    [from, zoneNames]
-  );
+  const filteredTo = useMemo<ZoneLight[]>(() => {
+    const zones = zoneNames.filter((z) => z?.value !== from?.value);
+    zones.unshift(DEFAULT_ZONE); // allow user to clear input
+    return zones;
+  }, [from, zoneNames]);
 
   useEffect(() => {
     if (fromId && fromId?.toLocaleLowerCase() !== oldFromId.current) {

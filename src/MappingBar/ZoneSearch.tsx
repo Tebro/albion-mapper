@@ -65,14 +65,13 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
   value,
   update,
 }) => {
-  const txtRef = useRef<HTMLInputElement>(null);
   const acRef = useRef(null);
   const [currentZoneList, setCurrentZoneList] = useState<ZoneLight[]>(zoneList);
   const [currentInput, setCurrentInput] = useState<string>(value.name);
 
   const keyEventHandler = useCallback(
     (e: KeyboardEvent) => {
-      const currentVal = txtRef?.current?.value;
+      const currentVal = currentInput;
 
       if (e.code.toLowerCase() === 'arrowright' && currentVal) {
         const maxStringLen = getMaxStrLen(currentZoneList, currentVal.length);
@@ -80,7 +79,7 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
         setCurrentInput(currentZoneList[0].name.substr(0, maxStringLen));
       }
     },
-    [currentZoneList]
+    [currentZoneList, currentInput]
   );
 
   useEventListener('keydown', keyEventHandler, acRef.current);
@@ -92,28 +91,26 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
       noOptionsText="no valid zones found"
       fullWidth
       autoSelect
-      includeInputInList
       autoHighlight
+      includeInputInList
       value={value}
       inputValue={currentInput}
       onInputChange={(_, value) => setCurrentInput(value)}
       filterOptions={(options: ZoneLight[], state: object) => {
         const filteredZones = filterZones(options, state);
 
-        if (!isEqual(filteredZones, currentZoneList)) {
+        if (currentInput && !isEqual(filteredZones, currentZoneList)) {
           setCurrentZoneList(clone(filteredZones));
         }
 
         return filteredZones;
       }}
       getOptionSelected={(o: ZoneLight, val: ZoneLight) =>
-        !val.value || o.value === val.value
+        o.value === val.value
       }
       getOptionLabel={(o: ZoneLight) => o.name}
       onChange={(_, val: ZoneLight | null) => update(val ?? DEFAULT_ZONE)}
-      renderInput={(params) => (
-        <TextField inputRef={txtRef} {...params} label={label} />
-      )}
+      renderInput={(params) => <TextField {...params} label={label} />}
     />
   );
 };
