@@ -1,6 +1,6 @@
 import clone from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
-import startsWith from 'lodash/startsWith';
+import startsWith from 'lodash/startsWith'; // lodash is faster than native implementation
 import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField } from '@material-ui/core';
@@ -8,7 +8,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import useEventListener from '@use-it/event-listener';
 
 import { DEFAULT_ZONE } from '../data/constants';
-import { ZoneLight } from '../types';
+import { ZoneLight } from './';
 
 interface ZoneSearchProps {
   zoneList: ZoneLight[];
@@ -21,7 +21,6 @@ const filterZones = (zoneList: ZoneLight[], state: object) => {
   const inputVal: string = (state as any).inputValue.toLowerCase();
 
   for (const z of zoneList) {
-    // lodash is faster than native implementation
     if (startsWith(z.value, inputVal)) {
       newZoneList.push(z);
     }
@@ -30,33 +29,18 @@ const filterZones = (zoneList: ZoneLight[], state: object) => {
   return newZoneList;
 };
 
-const getMaxStrLen = (curList: ZoneLight[], maxStr: number): number => {
+const getMaxString = (curList: ZoneLight[], input: string): string => {
   if (curList.length === 1) {
-    return curList[0].value.length;
+    return curList[0].name;
   }
 
-  const base = curList[0].value;
+  const lowInput = input.toLowerCase();
 
-  for (let i = 1; i < curList.length; i++) {
-    if (
-      !curList[i] ||
-      base.substr(0, maxStr + 1) !== curList[i].value.substr(0, maxStr + 1)
-    ) {
-      break;
-    }
-
-    ++maxStr;
+  if (curList.every((z) => startsWith(z.name.toLowerCase(), lowInput))) {
+    return getMaxString(curList, curList[0].name.substr(0, input.length + 1));
   }
 
-  if (
-    base.length !== maxStr &&
-    base.substr(0, maxStr + 1) ===
-      curList[curList.length - 1].value.substr(0, maxStr + 1)
-  ) {
-    return getMaxStrLen(curList, maxStr + 1);
-  }
-
-  return maxStr;
+  return curList[0].name.substr(0, input.length - 1);
 };
 
 const ZoneSearch: FC<ZoneSearchProps> = ({
@@ -74,9 +58,7 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
       const currentVal = currentInput;
 
       if (e.code.toLowerCase() === 'arrowright' && currentVal) {
-        const maxStringLen = getMaxStrLen(currentZoneList, currentVal.length);
-
-        setCurrentInput(currentZoneList[0].name.substr(0, maxStringLen));
+        setCurrentInput(getMaxString(currentZoneList, currentInput));
       }
     },
     [currentZoneList, currentInput]

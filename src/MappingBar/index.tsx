@@ -14,7 +14,7 @@ import { Button, FormControl, FormLabel, TextField } from '@material-ui/core';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 
 import { DEFAULT_PORTAL_SIZE, DEFAULT_ZONE } from '../data/constants';
-import { PortalSize, Zone, ZoneLight } from '../types';
+import { PortalSize, Zone } from '../types';
 import PortalSizeSelector from './PortalSizeSelector';
 import useAddPortal from './useAddPortal';
 import ZoneSearch from './ZoneSearch';
@@ -24,6 +24,11 @@ interface MappingBarProps {
   fromId: string | null;
   token: string;
   updatePortals: () => void;
+}
+
+export interface ZoneLight {
+  name: string;
+  value: string;
 }
 
 const MappingBar: FC<MappingBarProps> = ({

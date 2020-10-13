@@ -15,11 +15,6 @@ export interface Zone {
   resources: Resource[];
 }
 
-export interface ZoneLight {
-  name: string;
-  value: string;
-}
-
 export interface Portal {
   source: string;
   target: string;
