@@ -17,16 +17,10 @@ interface ZoneSearchProps {
   update: (zone: ZoneLight) => void;
 }
 const filterZones = (zoneList: ZoneLight[], state: object) => {
-  const newZoneList: ZoneLight[] = [];
   const inputVal: string = (state as any).inputValue.toLowerCase();
+  const inputTerms = inputVal.split(' ');
 
-  for (const z of zoneList) {
-    if (startsWith(z.value, inputVal)) {
-      newZoneList.push(z);
-    }
-  }
-
-  return newZoneList;
+  return inputTerms.reduce((list, term) => list.filter(i => i.name.toLowerCase().indexOf(term) >= 0), zoneList)
 };
 
 const getMaxString = (curList: ZoneLight[], input: string): string => {
