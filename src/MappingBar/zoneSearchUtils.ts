@@ -11,15 +11,17 @@ export const filterZones = (
   zoneList: ZoneLight[],
   state: FilterOptionsState<ZoneLight>
 ) => {
-  const inputVal: string = state.inputValue.toLowerCase();
+  const inputValueLower: string = state.inputValue.toLowerCase();
 
-  const newZoneList = zoneList.filter((z) => startsWith(z.value, inputVal));
+  const newZoneList = zoneList.filter((z) =>
+    startsWith(z.value, inputValueLower)
+  );
 
   if (newZoneList.length) {
     return newZoneList;
   }
 
-  const inputTerms = inputVal.split(' ');
+  const inputTerms = inputValueLower.split(' ');
 
   return inputTerms.reduce(
     (list: ZoneLight[], term) => list.filter((i) => i.value.indexOf(term) >= 0),
