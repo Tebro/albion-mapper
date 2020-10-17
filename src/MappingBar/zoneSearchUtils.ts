@@ -30,6 +30,8 @@ export const filterZones = (
 export const getMaxString = (curList: ZoneLight[], input: string): string => {
   if (curList.length === 1) {
     return curList[0].name;
+  } else if (curList.length === 0) {
+    return input;
   }
 
   const lowInput = input.toLowerCase();

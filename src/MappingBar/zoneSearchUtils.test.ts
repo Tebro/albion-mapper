@@ -46,36 +46,62 @@ describe('Test zoneSearchUtils', () => {
       expect(filterZones(testList, getState('BA O')).length).toBe(2);
       expect(filterZones(testList, getState('xxx')).length).toBe(0);
     });
+
+    test('Test single entry', () => {
+      const singleList = [
+        { name: 'HomeTerritory Skirmish', value: 'hometerritory skirmish' },
+      ];
+
+      expect(filterZones(singleList, getState('ho'))).toMatchObject(singleList);
+    });
+
+    test('Test empty list', () => {
+      expect(filterZones([], getState('xx')).length).toBe(0);
+    });
   });
 
   describe('Test getMaxString', () => {
-    const testList1: ZoneLight[] = [
-      { name: 'Sectun-Qinsom', value: 'sectun-qinsom' },
-      { name: 'Secent-Qi-Odesom', value: 'secent-qi-odesom' },
-      { name: 'Sectun-In-Qinsom', value: 'sectun-in-qinsom' },
-    ];
+    test('Test common cases', () => {
+      const testList1: ZoneLight[] = [
+        { name: 'Sectun-Qinsom', value: 'sectun-qinsom' },
+        { name: 'Secent-Qi-Odesom', value: 'secent-qi-odesom' },
+        { name: 'Sectun-In-Qinsom', value: 'sectun-in-qinsom' },
+      ];
 
-    expect(getMaxString(testList1, 'se')).toBe('Sec');
-    expect(getMaxString(testList1, 'sEc')).toBe('Sec');
+      expect(getMaxString(testList1, 'se')).toBe('Sec');
+      expect(getMaxString(testList1, 'sEc')).toBe('Sec');
 
-    const testList2: ZoneLight[] = [
-      { name: 'Bank of Thetford', value: 'bank of thetford' },
-      { name: 'Bank of Lymhurst', value: 'bank of lymhurst' },
-      { name: 'Bank of Batman', value: 'bank of batman' },
-      { name: 'Bank of Joker', value: 'bank of joker' },
-    ];
+      const testList2: ZoneLight[] = [
+        { name: 'Bank of Thetford', value: 'bank of thetford' },
+        { name: 'Bank of Lymhurst', value: 'bank of lymhurst' },
+        { name: 'Bank of Batman', value: 'bank of batman' },
+        { name: 'Bank of Joker', value: 'bank of joker' },
+      ];
 
-    expect(getMaxString(testList2, 'b')).toBe('Bank of ');
-    expect(getMaxString(testList2, 'Ban')).toBe('Bank of ');
-    expect(getMaxString(testList2, 'bAnk o')).toBe('Bank of ');
+      expect(getMaxString(testList2, 'b')).toBe('Bank of ');
+      expect(getMaxString(testList2, 'Ban')).toBe('Bank of ');
+      expect(getMaxString(testList2, 'bAnk o')).toBe('Bank of ');
 
-    const testList3: ZoneLight[] = [
-      { name: 'Sectun-Qinsom', value: 'sectun-qinsom' },
-      { name: 'Sectun-Qi-Odesom', value: 'secent-qi-odesom' },
-      { name: 'Sectun-Qi-Qinsom', value: 'sectun-in-qinsom' },
-    ];
+      const testList3: ZoneLight[] = [
+        { name: 'Sectun-Qinsom', value: 'sectun-qinsom' },
+        { name: 'Sectun-Qi-Odesom', value: 'secent-qi-odesom' },
+        { name: 'Sectun-Qi-Qinsom', value: 'sectun-in-qinsom' },
+      ];
 
-    expect(getMaxString(testList3, 'se')).toBe('Sectun-Qi');
-    expect(getMaxString(testList3.slice(1, 3), 'Se')).toBe('Sectun-Qi-');
+      expect(getMaxString(testList3, 'se')).toBe('Sectun-Qi');
+      expect(getMaxString(testList3.slice(1, 3), 'Se')).toBe('Sectun-Qi-');
+    });
+
+    test('Test single entry', () => {
+      const singleList = [
+        { name: 'HomeTerritory Skirmish', value: 'hometerritory skirmish' },
+      ];
+
+      expect(getMaxString(singleList, 'ho')).toBe('HomeTerritory Skirmish');
+    });
+
+    test('Test empty list', () => {
+      expect(getMaxString([], 'xx')).toBe('xx');
+    });
   });
 });
