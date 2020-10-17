@@ -5,10 +5,11 @@ import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import useEventListener from '@use-it/event-listener';
 
 import { DEFAULT_ZONE } from '../data/constants';
+import useEventListener from '../utils/hooks/useEventListener';
 import { ZoneLight } from './';
+import { FilterOptionsState } from '@material-ui/lab/useAutocomplete';
 
 interface ZoneSearchProps {
   zoneList: ZoneLight[];
@@ -16,11 +17,25 @@ interface ZoneSearchProps {
   value: ZoneLight;
   update: (zone: ZoneLight) => void;
 }
-const filterZones = (zoneList: ZoneLight[], state: object) => {
-  const inputVal: string = (state as any).inputValue.toLowerCase();
+
+const filterZones = (
+  zoneList: ZoneLight[],
+  state: FilterOptionsState<ZoneLight>
+) => {
+  const inputVal: string = state.inputValue.toLowerCase();
+
+  const newZoneList = zoneList.filter((z) => startsWith(z.value, inputVal));
+
+  if (newZoneList.length) {
+    return newZoneList;
+  }
+
   const inputTerms = inputVal.split(' ');
 
-  return inputTerms.reduce((list, term) => list.filter(i => i.name.toLowerCase().indexOf(term) >= 0), zoneList)
+  return inputTerms.reduce(
+    (list: ZoneLight[], term) => list.filter((i) => i.value.indexOf(term) >= 0),
+    zoneList
+  );
 };
 
 const getMaxString = (curList: ZoneLight[], input: string): string => {
@@ -58,6 +73,22 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
     [currentZoneList, currentInput]
   );
 
+  const filterOptions = useCallback(
+    (
+      options: ZoneLight[],
+      state: FilterOptionsState<ZoneLight>
+    ): ZoneLight[] => {
+      const filteredZones = filterZones(options, state);
+
+      if (currentInput && !isEqual(filteredZones, currentZoneList)) {
+        setCurrentZoneList(clone(filteredZones));
+      }
+
+      return filteredZones;
+    },
+    [currentInput, currentZoneList]
+  );
+
   useEventListener('keydown', keyEventHandler, acRef.current);
 
   return (
@@ -72,15 +103,7 @@ const ZoneSearch: FC<ZoneSearchProps> = ({
       value={value}
       inputValue={currentInput}
       onInputChange={(_, value) => setCurrentInput(value)}
-      filterOptions={(options: ZoneLight[], state: object) => {
-        const filteredZones = filterZones(options, state);
-
-        if (currentInput && !isEqual(filteredZones, currentZoneList)) {
-          setCurrentZoneList(clone(filteredZones));
-        }
-
-        return filteredZones;
-      }}
+      filterOptions={filterOptions}
       getOptionSelected={(o: ZoneLight, val: ZoneLight) =>
         o.value === val.value
       }
