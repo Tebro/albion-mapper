@@ -18,17 +18,13 @@ import { PortalSize, Zone } from '../types';
 import PortalSizeSelector from './PortalSizeSelector';
 import useAddPortal from './useAddPortal';
 import ZoneSearch from './ZoneSearch';
+import { ZoneLight } from './zoneSearchUtils';
 
 interface MappingBarProps {
   zones: Zone[];
   fromId: string | null;
   token: string;
   updatePortals: () => void;
-}
-
-export interface ZoneLight {
-  name: string;
-  value: string;
 }
 
 const MappingBar: FC<MappingBarProps> = ({

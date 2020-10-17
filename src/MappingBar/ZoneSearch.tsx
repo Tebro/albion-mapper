@@ -1,15 +1,14 @@
 import clone from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
-import startsWith from 'lodash/startsWith'; // lodash is faster than native implementation
 import React, { FC, useCallback, useRef, useState } from 'react';
 
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { FilterOptionsState } from '@material-ui/lab/useAutocomplete';
 
 import { DEFAULT_ZONE } from '../data/constants';
 import useEventListener from '../utils/hooks/useEventListener';
-import { ZoneLight } from './';
-import { FilterOptionsState } from '@material-ui/lab/useAutocomplete';
+import { filterZones, getMaxString, ZoneLight } from './zoneSearchUtils';
 
 interface ZoneSearchProps {
   zoneList: ZoneLight[];
@@ -17,40 +16,6 @@ interface ZoneSearchProps {
   value: ZoneLight;
   update: (zone: ZoneLight) => void;
 }
-
-const filterZones = (
-  zoneList: ZoneLight[],
-  state: FilterOptionsState<ZoneLight>
-) => {
-  const inputVal: string = state.inputValue.toLowerCase();
-
-  const newZoneList = zoneList.filter((z) => startsWith(z.value, inputVal));
-
-  if (newZoneList.length) {
-    return newZoneList;
-  }
-
-  const inputTerms = inputVal.split(' ');
-
-  return inputTerms.reduce(
-    (list: ZoneLight[], term) => list.filter((i) => i.value.indexOf(term) >= 0),
-    zoneList
-  );
-};
-
-const getMaxString = (curList: ZoneLight[], input: string): string => {
-  if (curList.length === 1) {
-    return curList[0].name;
-  }
-
-  const lowInput = input.toLowerCase();
-
-  if (curList.every((z) => startsWith(z.name.toLowerCase(), lowInput))) {
-    return getMaxString(curList, curList[0].name.substr(0, input.length + 1));
-  }
-
-  return curList[0].name.substr(0, input.length - 1);
-};
 
 const ZoneSearch: FC<ZoneSearchProps> = ({
   zoneList,
